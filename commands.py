@@ -1,21 +1,25 @@
 import re
 
-def process_command(command):
-    command_lower = command.lower()
-    response = {
-        "ação": "comando_desconhecido",
-        "parametros": {},
-        "comando_original": command
-    }
+def extrair_assunto(comando):
+    # Expressões regulares para capturar o assunto com diferentes variações
+    padroes_assunto = [
+        r"assunto\s*[:=]?\s*([^\.,\n]+)",  # assunto: teste ou assunto = teste
+        r"assunto\s+é\s+([^\.,\n]+)",      # assunto é teste
+        r"com\s+o\s+assunto\s+([^\.,\n]+)" # com o assunto teste
+    ]
+    
+    for padrao in padroes_assunto:
+        match = re.search(padrao, comando, re.IGNORECASE)
+        if match:
+            return match.group(1).strip()
+    
+    return "Assunto não especificado"
 
-    # Enviar email
-    if "mandar um email" in command_lower or "enviar email" in command_lower:
-        destinatario = re.search(r'para (\S+@\S+)', command_lower)
-        assunto = re.search(r'assunto: ([\w\s]+)', command_lower)
-        response["ação"] = "enviar_email"
-        response["parametros"] = {
-            "destinatario": destinatario.group(1) if destinatario else "",
-            "assunto": assunto.group(1) if assunto else ""
+# Exemplo de teste
+comando_exemplo = "mandeu um email assunto teste, para moraes@gg.com, mensagem ola guilherme"
+assunto_extraido = extrair_assunto(comando_exemplo)
+assunto_extraido
+
         }
 
     # Criar reunião
